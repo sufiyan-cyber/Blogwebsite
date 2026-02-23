@@ -20,7 +20,7 @@ Bootstrap5(app)
 gravatar = Gravatar(app, size=100, rating='g', default='retro',
                     force_default=False, force_lower=False, use_ssl=False, base_url=None)
 
-# TODO: Configure Flask-Login
+
 def admin_only(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -126,7 +126,7 @@ def register():
 
 
 
-# TODO: Retrieve a user from the database based on their email. 
+
 @app.route('/login',methods=["GET","POST"])
 def login():
     form=Loginform()
@@ -193,7 +193,7 @@ def show_post(post_id):
 
     return render_template("post.html", post=requested_post, current_user=current_user, form=comment_form)
 
-# TODO: Use a decorator so only an admin user can create a new post
+
 @app.route("/new-post", methods=["GET", "POST"])
 @admin_only
 def add_new_post():
@@ -213,7 +213,7 @@ def add_new_post():
     return render_template("make-post.html", form=form)
 
 
-# TODO: Use a decorator so only an admin user can edit a post
+
 @app.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
 @admin_only
 def edit_post(post_id):
@@ -236,7 +236,7 @@ def edit_post(post_id):
     return render_template("make-post.html", form=edit_form, is_edit=True)
 
 
-# TODO: Use a decorator so only an admin user can delete a post
+
 @app.route("/delete/<int:post_id>")
 @admin_only
 def delete_post(post_id):
