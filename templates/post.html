@@ -1,0 +1,88 @@
+{% include "header.html" %}
+
+<!-- Page Header-->
+<header class="masthead" style="background-image: url('{{post.img_url}}')">
+  <div class="container position-relative px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        <div class="post-heading">
+          <h1>{{ post.title }}</h1>
+          <h2 class="subheading">{{ post.subtitle }}</h2>
+          <span class="meta"
+            >Posted by
+            <a href="#">{{ post.author.name }}</a>
+            on {{ post.date }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Post Content -->
+<article>
+  <div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        {{ post.body|safe }}
+        <!--Only show Edit Post button if user id is 1 (admin user) -->
+        {% if current_user.is_authenticated and current_user.id == 1 %}
+        <div class="d-flex justify-content-end mb-4">
+          <a
+            class="btn btn-primary float-right"
+            href="{{url_for('edit_post', post_id=post.id)}}"
+            >Edit Post</a
+          >
+        </div>
+        {% endif %}
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <p class="flash" style="color: red; font-style: italic;">{{ message }}</p>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Comment Form -->
+        {% if current_user.is_authenticated %}
+        <div class="comment-form mb-4">
+          {{ ckeditor.load() }}
+          {{ ckeditor.config(name='comment_text') }}
+          <form method="POST" action="{{ url_for('show_post', post_id=post.id) }}">
+            {{ form.hidden_tag() }}
+            {{ form.comment_text() }}
+            {{ form.submit(class="btn btn-primary mt-2") }}
+          </form>
+        </div>
+        {% else %}
+        <p><a href="{{ url_for('login', next=request.url) }}">Log in</a> to leave a comment.</p>
+        {% endif %}
+
+        <!-- Comments List -->
+        <div class="comment">
+          <ul class="commentList" style="list-style: none; padding: 0;">
+            {% for comment in post.comments %}
+            <li style="display: flex; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
+              <div class="commenterImage" style="margin-right: 1rem;">
+                <img src="{{ comment.comment_author.email | gravatar }}"
+                     style="border-radius: 50%; width: 50px; height: 50px;" />
+              </div>
+              <div class="commentText">
+                {{ comment.text | safe }}
+                <span class="date sub-text" style="display: block; font-size: 0.85rem; color: #888; margin-top: 0.3rem;">
+                  <strong>{{ comment.comment_author.name }}</strong> &mdash; {{ comment.date }}
+                </span>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+{% include "footer.html" %}
+
